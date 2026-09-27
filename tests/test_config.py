@@ -200,3 +200,21 @@ def test_invalid_override_raises_configuration_error(settings: Settings) -> None
 def test_settings_are_immutable(settings: Settings) -> None:
     with pytest.raises(Exception, match="frozen"):
         settings.log_level = "DEBUG"  # type: ignore[misc]
+
+
+def test_every_setting_is_documented_in_env_example() -> None:
+    """Documentation must not drift away from the configuration surface."""
+    example = Path(__file__).resolve().parents[1] / ".env.example"
+    contents = example.read_text(encoding="utf-8")
+
+    undocumented = [name.upper() for name in Settings.model_fields if name.upper() not in contents]
+
+    assert undocumented == []
+
+
+def test_readme_documents_the_configuration_it_advertises() -> None:
+    readme = Path(__file__).resolve().parents[1] / "README.md"
+    contents = readme.read_text(encoding="utf-8")
+
+    for variable in ("TELEGRAM_BOT_TOKEN", "HELIUS_API_KEY", "TELEGRAM_ADMIN_USER_IDS"):
+        assert variable in contents

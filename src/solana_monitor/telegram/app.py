@@ -76,14 +76,20 @@ async def _send_reply(context: ContextTypes.DEFAULT_TYPE, chat_id: int, reply: R
         logger.warning("bot is not allowed to post here", extra={"chat_id": chat_id})
 
 
-def _identifiers(update: Update) -> tuple[int, int] | None:
-    """Return ``(chat_id, user_id)`` for a message update, or ``None``."""
-    message = update.effective_message
-    chat = update.effective_chat
-    user = update.effective_user
-    if message is None or chat is None or user is None:
+def _identifiers(update: object) -> tuple[int, int] | None:
+    """Return ``(chat_id, user_id)`` for a message update, or ``None``.
+
+    Defensive on purpose: a malformed or partial update must never raise inside a
+    handler, it must simply be ignored.
+    """
+    message = getattr(update, "effective_message", None)
+    chat = getattr(update, "effective_chat", None)
+    user = getattr(update, "effective_user", None)
+    chat_id = getattr(chat, "id", None)
+    user_id = getattr(user, "id", None)
+    if message is None or not isinstance(chat_id, int) or not isinstance(user_id, int):
         return None
-    return chat.id, user.id
+    return chat_id, user_id
 
 
 def build_command_handler(service: CommandService, command: str) -> Handler:
@@ -176,10 +182,11 @@ def build_error_handler() -> ErrorHandler:
             extra={"chat_id": getattr(chat, "id", None)},
         )
         message = getattr(update, "effective_message", None)
-        if message is None or context.error is None:
+        reply_text = getattr(message, "reply_text", None)
+        if reply_text is None or context.error is None:
             return
         with contextlib.suppress(Exception):
-            await message.reply_text(_UNEXPECTED_ERROR_HINT, parse_mode=ParseMode.HTML)
+            await reply_text(_UNEXPECTED_ERROR_HINT, parse_mode=ParseMode.HTML)
 
     return handler
 

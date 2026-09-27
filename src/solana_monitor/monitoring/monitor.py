@@ -42,7 +42,6 @@ Sleeper = Callable[[float], Awaitable[None]]
 Clock = Callable[[], datetime]
 
 _AUTH_BACKOFF_SECONDS: Final = 300.0
-_MAX_BACKOFF_EXPONENT: Final = 6
 
 
 class TransactionSource(Protocol):

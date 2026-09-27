@@ -20,7 +20,6 @@ from solana_monitor.domain.addresses import is_valid_address
 from solana_monitor.domain.models import AnalysisResult, TokenAcquisition, WatchStatusView
 from solana_monitor.telegram.registry import CommandSpec
 
-LAMPORTS_PER_SOL: Final = Decimal(1_000_000_000)
 _TIMESTAMP_FORMAT: Final = "%Y-%m-%d %H:%M:%S UTC"
 _UNKNOWN: Final = "unknown"
 _MAX_DESCRIPTION_CHARS: Final = 120
