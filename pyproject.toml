@@ -1,0 +1,167 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "solana-token-purchase-monitor"
+version = "1.0.0"
+description = "Telegram bot that watches Solana wallets and alerts on new token purchases using the Helius Enhanced Transactions API."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "savantpseudoist" }]
+keywords = ["solana", "telegram", "bot", "helius", "monitoring", "defi"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Framework :: AsyncIO",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Office/Business :: Financial",
+  "Typing :: Typed",
+]
+dependencies = [
+  "aiohttp>=3.10,<4",
+  "pydantic>=2.9,<3",
+  "pydantic-settings>=2.6,<3",
+  "python-telegram-bot>=21.6,<23",
+]
+
+[project.optional-dependencies]
+dev = [
+  "mypy>=1.11",
+  "pip-audit>=2.7",
+  "pre-commit>=3.8",
+  "pytest>=8.3",
+  "pytest-asyncio>=0.24",
+  "pytest-cov>=5.0",
+  "ruff>=0.6",
+]
+
+[project.urls]
+Repository = "https://github.com/savantpseudoist/Solana-Token-Purchase-Monitor"
+Issues = "https://github.com/savantpseudoist/Solana-Token-Purchase-Monitor/issues"
+
+[project.scripts]
+solana-monitor = "solana_monitor.cli:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+include-package-data = false
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# ---------------------------------------------------------------------------
+# Formatting / linting (ruff)
+# ---------------------------------------------------------------------------
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+extend-exclude = [
+  # Legacy monolith removed by the overhaul; kept excluded until deleted.
+  "main.py",
+  "config.py",
+]
+
+[tool.ruff.lint]
+select = [
+  "A",     # builtins shadowing
+  "ANN",   # type annotations
+  "ARG",   # unused arguments
+  "B",     # bugbear
+  "BLE",   # blind except
+  "C4",    # comprehensions
+  "DTZ",   # timezone-aware datetimes
+  "E",     # pycodestyle errors
+  "EM",    # exception messages
+  "ERA",   # commented-out code
+  "F",     # pyflakes
+  "FLY",   # f-string joins
+  "G",     # logging format
+  "I",     # import sorting
+  "ISC",   # implicit string concat
+  "LOG",   # logging correctness
+  "N",     # naming
+  "PERF",  # performance
+  "PIE",   # pie
+  "PTH",   # pathlib
+  "RET",   # return simplifications
+  "RUF",   # ruff-specific
+  "S",     # bandit-style security checks
+  "SIM",   # simplify
+  "T10",   # debugger
+  "T20",   # print statements (use logging)
+  "TRY",   # exception handling
+  "UP",    # pyupgrade
+  "W",     # pycodestyle warnings
+]
+ignore = [
+  "ANN401", # explicit Any is acceptable at third-party JSON boundaries
+  "TRY003", # long messages outside the exception class are fine for CLI/config errors
+  "TRY400", # logger.exception is preferred over error+exc_info; enforced by review
+  "S311",   # random is only used for retry jitter, not for security decisions
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = [
+  "ANN001",  # pytest fixtures
+  "ANN201",  # test return annotations
+  "ARG001",  # fixture parameters used implicitly
+  "S101",    # assert is the point of tests
+  "S105",    # hardcoded "passwords" are dummy fixtures
+  "S106",    # dummy function arguments in tests
+  "PLR2004", # magic values are part of expected payloads
+]
+
+[tool.ruff.lint.flake8-pytest-style]
+fixture-parentheses = true
+parametrize-names-type = "tuple"
+
+[tool.ruff.format]
+docstring-code-format = true
+
+# ---------------------------------------------------------------------------
+# Type checking (mypy)
+# ---------------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.11"
+files = ["src", "tests"]
+strict = true
+warn_unreachable = true
+warn_unused_configs = true
+show_error_codes = true
+pretty = true
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+warn_return_any = false
+
+# ---------------------------------------------------------------------------
+# Tests (pytest)
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+addopts = "-ra --strict-markers --strict-config"
+filterwarnings = ["error"]
+markers = ["integration: tests that exercise several layers together"]
+
+[tool.coverage.run]
+branch = true
+source = ["src/solana_monitor"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:", "raise NotImplementedError"]
