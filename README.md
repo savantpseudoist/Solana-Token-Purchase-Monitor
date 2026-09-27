@@ -125,6 +125,7 @@ change:
 | `MONITOR_ALERT_ON_REPEAT` | `false` | Alert again when a previously alerted mint is bought again |
 | `MONITOR_RESUME_ON_START` | `true` | Resume monitoring automatically after a restart |
 | `MONITOR_IGNORED_MINTS` | wrapped SOL | Comma separated mints that never alert |
+| `ANALYZE_COMMANDS_PER_MINUTE` | `2` | Separate per-user budget for `/analyze` (each call costs several Helius requests) |
 | `STATE_FILE` | `var/state.json` | Where cursors and alerted mints are stored |
 | `LOG_LEVEL`, `LOG_FORMAT` | `INFO`, `text` | Logging verbosity and `text`/`json` output |
 

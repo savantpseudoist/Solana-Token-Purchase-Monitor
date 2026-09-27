@@ -17,6 +17,8 @@ class CommandSpec:
     summary: str
     usage: str
     requires_admin: bool = False
+    costly: bool = False
+    """The command issues billable API requests, so it gets its own budget."""
 
 
 COMMANDS: Final[tuple[CommandSpec, ...]] = (
@@ -47,6 +49,7 @@ COMMANDS: Final[tuple[CommandSpec, ...]] = (
         name="analyze",
         summary="Summarise purchases in a time window",
         usage="/analyze <1h|1d|1w>",
+        costly=True,
     ),
     CommandSpec(
         name="whoami",

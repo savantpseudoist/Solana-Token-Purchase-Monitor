@@ -72,6 +72,7 @@ class CommandService:
         holdings: HoldingsReader | None = None,
         authorization: CommandAuthorization | None = None,
         throttle: CommandThrottle | None = None,
+        costly_throttle: CommandThrottle | None = None,
     ) -> None:
         self._settings = settings
         self._store = store
@@ -81,6 +82,11 @@ class CommandService:
         self._holdings = holdings
         self._authorization = authorization or CommandAuthorization.from_settings(settings)
         self._throttle = throttle or CommandThrottle(settings.telegram_commands_per_minute)
+        # /analyze scans up to ANALYZE_MAX_PAGES billable pages per call, so it gets
+        # its own, much smaller budget per user.
+        self._costly_throttle = costly_throttle or CommandThrottle(
+            settings.analyze_commands_per_minute
+        )
 
     @property
     def authorization(self) -> CommandAuthorization:
@@ -103,6 +109,12 @@ class CommandService:
             return formatting.build_error(str(error))
         if not self._throttle.allow(user_id):
             return formatting.build_error(self._throttle.retry_hint())
+        if spec.costly and not self._costly_throttle.allow(user_id):
+            hint = (
+                "This command queries the chain and is rate limited separately "
+                "(ANALYZE_COMMANDS_PER_MINUTE). Please wait a moment."
+            )
+            return formatting.build_error(hint)
         return await self._dispatch(name, args, chat_id=chat_id, user_id=user_id)
 
     async def _dispatch(

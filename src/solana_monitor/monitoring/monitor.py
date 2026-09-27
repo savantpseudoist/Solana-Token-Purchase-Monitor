@@ -87,6 +87,7 @@ class MonitorStats:
     started_at: datetime | None = field(default=None)
 
     def snapshot(self) -> dict[str, object]:
+        """Structured-log friendly view of the counters."""
         return {
             "polls": self.polls,
             "transactions_scanned": self.transactions_scanned,
@@ -110,7 +111,6 @@ class MonitorConfig:
     max_catchup_pages: int = 10
     page_size: int = 100
     alert_on_repeat: bool = False
-    prime_from_holdings: bool = True
 
     @classmethod
     def from_settings(cls, settings: Settings) -> MonitorConfig:
@@ -259,7 +259,8 @@ class WalletMonitor:
         )
 
     async def _load_holdings(self) -> frozenset[str] | None:
-        if self._holdings is None or not self._config.prime_from_holdings:
+        """Current holdings, or ``None`` when unknown (no source, or the API failed)."""
+        if self._holdings is None:
             return None
         return await self._holdings.get_owned_fungible_mints(self._state.wallet)
 
@@ -305,6 +306,7 @@ class WalletMonitor:
                     "transactions": len(scan),
                     "alerts": alerted,
                     "cursor": state.cursor_signature,
+                    **self._stats.snapshot(),
                 },
             )
 

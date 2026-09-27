@@ -122,6 +122,7 @@ class Settings(BaseSettings):
     # -- Analysis ------------------------------------------------------------
     analyze_max_pages: int = Field(default=10, ge=1, le=100)
     analyze_max_tokens_listed: int = Field(default=10, ge=1, le=50)
+    analyze_commands_per_minute: int = Field(default=2, ge=1, le=60)
 
     # -- Presentation --------------------------------------------------------
     alerts_dexscreener_base_url: str = Field(default="https://dexscreener.com/solana")

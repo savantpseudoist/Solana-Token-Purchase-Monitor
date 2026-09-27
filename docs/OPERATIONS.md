@@ -83,7 +83,9 @@ causes a burst of alerts once it recovers rather than silent data loss.
 - Alerts are delivered as HTML parse mode with link previews disabled, and the
   bot never constructs a URL from an unvalidated mint.
 - Per-user command throttling (`TELEGRAM_COMMANDS_PER_MINUTE`, default 12) keeps
-  an abusive or broken client from turning the bot into an API-credit cannon.
+  an abusive or broken client from turning the bot into an API-credit cannon, and
+  `/analyze` – which issues up to `ANALYZE_MAX_PAGES` billable requests per call –
+  has a second, tighter budget (`ANALYZE_COMMANDS_PER_MINUTE`, default 2).
 - The container image runs as a non-root user and takes secrets only through the
   environment.
 

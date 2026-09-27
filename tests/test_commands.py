@@ -180,6 +180,24 @@ async def test_command_flooding_is_throttled(tmp_path: Path) -> None:
     assert "too quickly" in reply.text
 
 
+async def test_expensive_commands_have_their_own_budget(tmp_path: Path) -> None:
+    harness = build_harness(tmp_path, ANALYZE_COMMANDS_PER_MINUTE="1")
+    await harness.store.set_wallet(CHAT_ID, f.WATCHED_WALLET)
+
+    first = await harness.run("/analyze", ("1h",))
+    second = await harness.run("/analyze", ("1h",))
+    # The general throttle still allows other commands after the analyze budget
+    # is exhausted, so a user is not locked out of the cheap commands.
+    help_reply = await harness.run("/help")
+
+    assert first is not None
+    assert "1h" in first.text
+    assert second is not None
+    assert "rate limited separately" in second.text
+    assert help_reply is not None
+    assert "Available commands" in help_reply.text
+
+
 async def test_unknown_commands_are_ignored(tmp_path: Path) -> None:
     harness = build_harness(tmp_path)
 
