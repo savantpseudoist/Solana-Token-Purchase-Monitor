@@ -1,0 +1,20 @@
+# Optional containerised run: copy .env.example to .env, fill it in, then
+#   docker compose up -d
+services:
+  monitor:
+    build: .
+    image: solana-token-monitor:latest
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      # Runtime state (cursors, alerted mints) must survive restarts.
+      - monitor-state:/data
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  monitor-state:
