@@ -194,7 +194,6 @@ class Settings(BaseSettings):
             raise ValueError(msg)
         return self
 
-
     # -- Derived values ------------------------------------------------------
     def secret_values(self) -> tuple[str, ...]:
         """Secret strings that must never appear in logs."""

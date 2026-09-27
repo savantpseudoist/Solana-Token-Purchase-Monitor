@@ -65,11 +65,6 @@ where = ["src"]
 line-length = 100
 target-version = "py311"
 src = ["src", "tests"]
-extend-exclude = [
-  # Legacy monolith removed by the overhaul; kept excluded until deleted.
-  "main.py",
-  "config.py",
-]
 
 [tool.ruff.lint]
 select = [
