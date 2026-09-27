@@ -9,6 +9,7 @@ alert falls back to the raw amount.
 from __future__ import annotations
 
 import logging
+import time
 from collections import OrderedDict
 from collections.abc import Iterable
 from typing import Final, Protocol
@@ -39,7 +40,7 @@ class TokenMetadataResolver:
         *,
         ttl_seconds: float = 3600.0,
         max_entries: int = _DEFAULT_MAX_ENTRIES,
-        clock: Clock,
+        clock: Clock = time.monotonic,
     ) -> None:
         self._source = source
         self._ttl = max(0.0, ttl_seconds)

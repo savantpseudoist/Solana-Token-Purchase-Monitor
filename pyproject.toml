@@ -28,7 +28,9 @@ dependencies = [
   "aiohttp>=3.10,<4",
   "pydantic>=2.9,<3",
   "pydantic-settings>=2.7,<3",
-  "python-telegram-bot>=21.6,<23",
+  # The rate-limiter extra is required: AIORateLimiter raises at start-up
+  # without it, and it is what keeps us inside Telegram's flood limits.
+  "python-telegram-bot[rate-limiter]>=21.6,<23",
 ]
 
 [project.optional-dependencies]
@@ -113,6 +115,7 @@ ignore = [
   "ANN001",  # pytest fixtures
   "ANN201",  # test return annotations
   "ARG001",  # fixture parameters used implicitly
+  "ARG002",  # test doubles must keep the real protocol parameter names
   "S101",    # assert is the point of tests
   "S105",    # hardcoded "passwords" are dummy fixtures
   "S106",    # dummy function arguments in tests

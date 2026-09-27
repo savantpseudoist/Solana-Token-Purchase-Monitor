@@ -31,7 +31,7 @@ from solana_monitor.domain.models import (
     Transaction,
     WatchStatusView,
 )
-from solana_monitor.helius.client import HistoryScan
+from solana_monitor.helius.client import HistoryScan, SortOrder
 from solana_monitor.monitoring.detector import PurchaseDetector
 from solana_monitor.monitoring.state import WatchState, WatchStore
 from solana_monitor.resilience import compute_backoff
@@ -53,7 +53,7 @@ class TransactionSource(Protocol):
         address: str,
         *,
         gte_time: int | None = ...,
-        sort_order: str = ...,
+        sort_order: SortOrder = ...,
         start_after: str | None = ...,
         start_before: str | None = ...,
         page_size: int | None = ...,
