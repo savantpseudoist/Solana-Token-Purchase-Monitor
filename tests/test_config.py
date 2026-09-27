@@ -10,11 +10,11 @@ from collections.abc import Callable
 from pathlib import Path
 
 import pytest
-from tests.conftest import VALID_API_KEY, VALID_BOT_TOKEN
 
 from solana_monitor.config import Settings, load_settings
 from solana_monitor.domain.constants import WRAPPED_SOL_MINT
 from solana_monitor.domain.errors import ConfigurationError
+from tests.conftest import VALID_API_KEY, VALID_BOT_TOKEN
 
 EnvConfig = Callable[..., Settings]
 

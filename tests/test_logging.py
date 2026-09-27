@@ -5,8 +5,6 @@ from __future__ import annotations
 import json
 import logging
 
-from tests.conftest import VALID_API_KEY, VALID_BOT_TOKEN, make_log_record
-
 from solana_monitor.config import Settings
 from solana_monitor.logging_setup import (
     REDACTED,
@@ -15,6 +13,7 @@ from solana_monitor.logging_setup import (
     _RedactingFormatter,
     configure_logging,
 )
+from tests.conftest import VALID_API_KEY, VALID_BOT_TOKEN, make_log_record
 
 
 def test_literal_secret_is_redacted() -> None:

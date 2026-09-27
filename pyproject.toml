@@ -116,6 +116,7 @@ ignore = [
   "S101",    # assert is the point of tests
   "S105",    # hardcoded "passwords" are dummy fixtures
   "S106",    # dummy function arguments in tests
+  "S107",    # "token_standard" is not a password
   "PLR2004", # magic values are part of expected payloads
 ]
 
