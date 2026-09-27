@@ -265,7 +265,12 @@ class WalletMonitor:
         return await self._holdings.get_owned_fungible_mints(self._state.wallet)
 
     async def _consume_new_activity(self) -> None:
-        """Fetch everything newer than the cursor and alert on new acquisitions."""
+        """Fetch everything newer than the cursor and alert on new acquisitions.
+
+        The cursor only advances past a transaction once its alerts have been
+        delivered, so a Telegram outage makes the next pass retry that transaction
+        (at-least-once delivery) instead of silently skipping the purchase.
+        """
         state = self._state
         scan = await self._source.collect_history(
             state.wallet,
@@ -279,7 +284,13 @@ class WalletMonitor:
         for transaction in scan.transactions:
             if state.is_processed(transaction.signature):
                 continue
-            alerted += await self._handle_transaction(transaction)
+            try:
+                alerted += await self._handle_transaction(transaction)
+            except MonitorError:
+                # Persist what we did complete, then let the loop back off and
+                # retry from this transaction on the next pass.
+                await self._store.save()
+                raise
             state.mark_processed(transaction.signature)
             state.cursor_signature = transaction.signature
         if scan.truncated:
