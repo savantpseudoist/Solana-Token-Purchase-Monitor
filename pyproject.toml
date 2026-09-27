@@ -27,7 +27,7 @@ classifiers = [
 dependencies = [
   "aiohttp>=3.10,<4",
   "pydantic>=2.9,<3",
-  "pydantic-settings>=2.6,<3",
+  "pydantic-settings>=2.7,<3",
   "python-telegram-bot>=21.6,<23",
 ]
 
